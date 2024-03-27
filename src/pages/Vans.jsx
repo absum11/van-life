@@ -1,8 +1,50 @@
+import  React from "react";
+import {Link} from "react-router-dom";
 
-const Vans = () => {
-  return (
-    <h1>Vans Page goes here🚐</h1>
+export default function Vans(){
+    const [vans,setVans]= React.useState([]);
+    const [loading,setLoading]= React.useState(true);
+
+  /* fetch vans data with useEffect 
+  having empty dependency array 
+  to load data only once on Vans render*/  
+  React.useEffect(() => {
+    fetch("/api/vans")
+      .then((res) => res.json())
+      .then(data => {
+        setVans(data.vans)
+        setLoading(false)}
+        )
+  }, [])
+   
+ 
+//   map each van data into a tile of diplay grid
+  const vanElements= vans.map(van=> (
+        <div key={van.id} className="van-tile">
+         {/* navigate to van by id api onClick */}
+            <Link to={`/vans/${van.id}`}>
+                <img src={van.imageUrl} alt={`image of ${van.name}`} />
+                <div className="van-info">
+                    <h3>{van.name}</h3>
+                    <p>${van.price}<span>/day</span></p>
+                </div>
+                <i className={`van-type ${van.type} selected`}>{van.type}</i>
+            </Link>
+        </div>
+  ))
+
+  return ( 
+    <div className="van-list-container">
+        {loading ? <h2>Loading...</h2>:
+        <>
+            <h2>Explore our Van Options</h2>
+            <div className="van-list">
+                {vanElements}
+            </div>
+        </>
+        }
+        
+     </div>  
   )
 }
 
-export default Vans
